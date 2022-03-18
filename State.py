@@ -97,6 +97,7 @@ if __name__ == "__main__":
     context = Robot(SensingState())
     context.request1()
     context.request2()
+    #test git#
 
 WindMaze = [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
             [3.23, 3.23, -1.0, -1.0, -1.0, -1.0, 3.23],
