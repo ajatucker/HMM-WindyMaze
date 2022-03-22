@@ -1,14 +1,12 @@
 from __future__ import annotations
-import numpy
+#import numpy
 import itertools
 from array import*
 from abc import ABC, abstractmethod
 
 class Robot:
     """
-    The Context defines the interface of interest to clients. It also maintains
-    a reference to an instance of a State subclass, which represents the current
-    state of the Context.
+   This is the robot's context
     """
 
     _state = None
@@ -17,31 +15,33 @@ class Robot:
     """
 
     def __init__(self, state: State) -> None:
-        self.transition_to(state)
+        self.change_state(state)
 
-    def transition_to(self, state: State):
+    def change_state(self, state: State):
         """
-        The Context allows changing the State object at runtime.
+        Change to another state
         """
 
-        print(f"Context: Transition to {type(state).__name__}")
+        print(f"Context: Change state to {type(state).__name__}")
         self._state = state
         self._state.context = self
 
     """
-    The Context delegates part of its behavior to the current State object.
+    
     """
 
-    def request1(self):
-        self._state.handle1()
+    def sensing(self):
+        self._state.sensing()
 
-    def request2(self):
-        self._state.handle2()
+    def moving(self):
+        self._state.moving()
+    def filtering(self):
+        self._state.filtering()
 
 
 class State(ABC):
     """
-    Abstract State 
+    Abstract State class
     """
 
     @property
@@ -53,15 +53,13 @@ class State(ABC):
         self._context = context
 
     @abstractmethod
-    def handle1(self) -> None:
+    def sensing(self) -> None:
         pass
-
     @abstractmethod
-    def handle2(self) -> None:
+    def filtering(self) -> None:
         pass
-
     @abstractmethod
-    def handle2(self) -> None:
+    def moving(self) -> None:
         pass
 
 
@@ -72,31 +70,43 @@ Context.
 
 
 class SensingState(State):
-    def handle1(self) -> None:
-        print("ConcreteStateA handles request1.")
-        print("ConcreteStateA wants to change the state of the context.")
-        #self.context.transition_to(ConcreteStateB())
+    def sensing(self) -> None:
+        print("Sensing state handles sensing.")
+        print("Sensing wants to change the state of the context.")
+        print("We need to filter after sensing.")
+        self.context.filtering()
+        self.context.change_state(MovingState())
 
-    def handle2(self) -> None:
-        print("ConcreteStateA handles request2.")
+    def filtering(self) -> None:
+        print("Sensing handles filtering request.")
+    def moving(self) -> None:
+        pass
 
 
 class MovingState(State):
-    def handle1(self) -> None:
-        print("ConcreteStateB handles request1.")
+    def moving(self) -> None:
+        print("Moving state handles moving.")
+        print("Moving wants to change the state of the context.")
+        print("We need to filter after moving.")
+        self.context.filtering()
+        self.context.change_state(SensingState())
 
-    def handle2(self) -> None:
-        print("ConcreteStateB handles request2.")
-        print("ConcreteStateB wants to change the state of the context.")
+    def filtering(self) -> None:
+        print("Moving state handles filtering request.")
         #self.context.transition_to(ConcreteStateA())
+    def sensing(self) -> None:
+        pass
 
 
 if __name__ == "__main__":
     # The client code.
 
     context = Robot(SensingState())
-    context.request1()
-    context.request2()
+    context.sensing()
+    context.moving()
+    """
+    Need to add while loop that loops the changing state context until we see a value of 98% or so given the test he gave us to go off of
+    """
     #test git#
 
 WindMaze = [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
@@ -106,4 +116,4 @@ WindMaze = [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23],
             [3.23, 3.23, 3.23, 3.23, -1.0, -1.0, 3.23],
             [3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23]]
 
-print (WindMaze)
+#print (WindMaze)
