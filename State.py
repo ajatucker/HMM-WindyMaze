@@ -27,14 +27,19 @@ class Robot:
         self._state.context = self
 
     """
-    
+    Sensing calls sensing class
     """
 
     def sensing(self):
         self._state.sensing()
-
+    """
+    Moving calls moving class
+    """
     def moving(self):
         self._state.moving()
+    """
+    Filtering will not be called directly, but it can be if needed. Filtering will vary whether the state is moving or sensing
+    """
     def filtering(self):
         self._state.filtering()
 
@@ -61,12 +66,6 @@ class State(ABC):
     @abstractmethod
     def moving(self) -> None:
         pass
-
-
-"""
-Concrete States implement various behaviors, associated with a state of the
-Context.
-"""
 
 
 class SensingState(State):
@@ -97,6 +96,11 @@ class MovingState(State):
     def sensing(self) -> None:
         pass
 
+
+"""
+Need to add adjustments to accept the maze into the classes, the maze is our little robot's map
+
+"""
 
 if __name__ == "__main__":
     # The client code.
