@@ -88,15 +88,15 @@ class SensingState(State):
         s = 0.0
         for i in range(len(map)):
             for j in range(len(map[i])):
-                update = (sense == map[i][j])
-                if(map[i][j] != -1):
-                    map[i][j] = map[i][j] * (update * self.context._sensor_accuracy + (1-update)*(1-self.context._sensor_accuracy))
+                update = (sense == map[i][j]) #this is never true, so it never updates?
+                if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
+                    map[i][j] += map[i][j] * (update * self.context._sensor_accuracy) #+ (1-update)*(1-self.context._sensor_accuracy))
                     s += map[i][j]
 
         # normalize
         for i in range(len(q)):
             for j in range(len(map[0])):
-                if(map[i][j] > -1):
+                if(map[i][j] > 0):
                     map[i][j] /= s
        # print("Sensing state handles sensing.")
         print("Sensing wants to change the state of the context.")
