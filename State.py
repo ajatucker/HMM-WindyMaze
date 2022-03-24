@@ -1,5 +1,5 @@
 from __future__ import annotations
-#import numpy
+import numpy as np 
 import itertools
 from array import*
 from abc import ABC, abstractmethod
@@ -17,12 +17,21 @@ class Robot:
 
     _sensor_accuracy = .85
     """
-                          W N E S
+                        
     """
-    _transition_matrix = [[0,0,0,0],
-                          [0,.1,.1,.1],
-                          [0,0,0,0],
-                          [0,0,0,0]]
+    _sensing_matrix = [[.85, .85, 0, 0], #observe obstacle
+                       [.15, .15, 0, 0], #dont observe obstacle
+                       [ 0,   0, .1, .1], #make mistake
+                       [ 0,   0, .9, .9]] #dont mistake
+    
+    """
+                       W   N   E   S    
+    """
+    _moving_matrix =[[.8, .1,  0, .1],  #W
+                     [.1, .8, .1,  0],  #N
+                     [ 0, .1, .8, .1],  #E
+                     [.1,  0, .1, .8]]  #S
+
 
     def __init__(self, state: State, map) -> None:
         self.my_map = map
@@ -47,15 +56,13 @@ class Robot:
     """
     def moving(self, moves):
         self._state.moving(self.my_map, moves)
-    """
-    Filtering will not be called directly, but it can be if needed. Filtering will vary whether the state is moving or sensing
-    """
+    
     def filtering(self):
         self._state.filtering(self.my_map)
     
     def show(self):
-        rows = ['[' + ','.join(map(lambda x: '{0:.2f}'.format(x),r)) + ']' for r in self._my_map]
-        print('[' + ',\n '.join(rows) + ']')
+        rows = [' '.join(map(lambda x:'{0:.2f}'.format(x),r)) + ' ' for r in self._my_map]
+        print(' ' + '\n '.join(rows) + ' ')
 
 
 class State(ABC):
@@ -84,14 +91,14 @@ class State(ABC):
 
 class SensingState(State):
     def sensing(self, map, sense) -> None:
-        q = map
         s = 0.0
         for i in range(len(map)):
             for j in range(len(map[i])):
+                self.filtering(map[i][j], map, sense)
                 update = (sense == map[i][j]) #this is never true, so it never updates?
                 if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
                     map[i][j] += map[i][j] * (update * self.context._sensor_accuracy) #+ (1-update)*(1-self.context._sensor_accuracy))
-                    s += map[i][j]
+                    s += 1
 
         # normalize
         for i in range(len(q)):
@@ -101,13 +108,26 @@ class SensingState(State):
        # print("Sensing state handles sensing.")
         print("Sensing wants to change the state of the context.")
       #print("We need to filter after sensing.")
-        self.filtering(map)
+        #self.filtering(map)
         self.context._my_map = map
         self.context.change_state(MovingState())
 
-    def filtering(self, map) -> None:
+    def filtering(self, checkNum, map, dir) -> None:
+        if(checkNum > 0):
+            if dir == ([1,0,0,0]): #W
+                print(checkNum)
+                #need to look west
+            elif (dir == ([0,1,0,0])): #N
+                print(checkNum)
+                 #need to look north
+            elif(dir == [0,0,1,0]): #E
+                print(checkNum)
+                 #need to look east
+            elif(dir == [0,0,0,1]): #S
+                print(checkNum)
+                 #need to look south
         #print("Sensing handles filtering request.")
-        pass
+        
     def moving(self, map) -> None:
         pass
 
