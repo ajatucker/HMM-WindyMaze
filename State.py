@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np 
+import numpy as np
 import itertools
 from array import*
 from abc import ABC, abstractmethod
@@ -16,13 +16,6 @@ class Robot:
     _state = None
 
     _sensor_accuracy = .85
-    """
-                        
-    """
-    _sensing_matrix = [[.85, .85, 0, 0], #observe obstacle
-                       [.15, .15, 0, 0], #dont observe obstacle
-                       [ 0,   0, .1, .1], #make mistake
-                       [ 0,   0, .9, .9]] #dont mistake
     
     """
                        W   N   E   S    
@@ -90,42 +83,70 @@ class State(ABC):
 
 
 class SensingState(State):
-    def sensing(self, map, sense) -> None:
-        s = 0.0
-        for i in range(len(map)):
-            for j in range(len(map[i])):
-                self.filtering(map[i][j], map, sense)
-                update = (sense == map[i][j]) #this is never true, so it never updates?
-                if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
-                    map[i][j] += map[i][j] * (update * self.context._sensor_accuracy) #+ (1-update)*(1-self.context._sensor_accuracy))
-                    s += 1
+    """
+    Sensing matrix is only available in the sensing state                    
+    """
+    """
+                          W   N   E   S    
+    """        
 
-        # normalize
-        for i in range(len(q)):
-            for j in range(len(map[0])):
-                if(map[i][j] > 0):
-                    map[i][j] /= s
-       # print("Sensing state handles sensing.")
+    def sensing(self, map, sense) -> None:
+        total = 0
+        for i in range(len(map)):
+                for j in range(len(map[i])):
+                    if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
+                        update = self.filtering(i, j, map[i][j], map, sense)
+                        map[i][j] = map[i][j] * (update) #+ (1-update)*(1-self.context._sensor_accuracy))
+                        total += 1
+        
+        # print("Sensing state handles sensing.")
         print("Sensing wants to change the state of the context.")
-      #print("We need to filter after sensing.")
+        #print("We need to filter after sensing.")
         #self.filtering(map)
         self.context._my_map = map
         self.context.change_state(MovingState())
 
-    def filtering(self, checkNum, map, dir) -> None:
-        if(checkNum > 0):
+    def filtering(self, indexI, indexJ, checkNum, map, dir) -> None:
+        if(checkNum > -1):
+            #print(checkNum)
+            #mult = np.multiply(self._sensing_matrix, dir)
+            #print(mult)
             if dir == ([1,0,0,0]): #W
-                print(checkNum)
+                pass
                 #need to look west
             elif (dir == ([0,1,0,0])): #N
-                print(checkNum)
+                pass
                  #need to look north
             elif(dir == [0,0,1,0]): #E
-                print(checkNum)
+                pass
                  #need to look east
             elif(dir == [0,0,0,1]): #S
-                print(checkNum)
+                if(map[indexI-1][0] in map or map[indexI-1][0] == -1.00):
+                    checkNum = checkNum * .15
+                    print("checking 1")
+                else:
+                    checkNum = checkNum * .9
+
+                if(map[0][indexJ-1] in map or map[0][indexJ-1] == -1.00):
+                     checkNum = checkNum * .15
+                     print("checking 2")
+                else:
+                    checkNum = checkNum * .9
+                
+                if(map[indexI+1][0] in map or map[indexI+1][0] == -1.00):
+                     checkNum = checkNum * .15
+                     print("checking 3")
+                else:
+                    checkNum = checkNum * .9
+                
+                if(map[0][indexJ-1] in map or map[0][indexJ-1] == -1.00):
+                     checkNum = checkNum * .1
+                else:
+                    checkNum = checkNum * .85
+            
+            print(checkNum)
                  #need to look south
+            return checkNum
         #print("Sensing handles filtering request.")
         
     def moving(self, map) -> None:
@@ -175,7 +196,7 @@ if __name__ == "__main__":
             [3.23, 3.23, 3.23, 3.23, -1.0, -1.0, 3.23],
             [3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23]]
     context = Robot(SensingState(), WindMaze)
-    context.sensing(sense[1])
+    context.sensing(sense[0])
     context.show()
     context.moving(movements)
 #print (WindMaze)
