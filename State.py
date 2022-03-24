@@ -4,15 +4,18 @@ import itertools
 from array import*
 from abc import ABC, abstractmethod
 
-class Robot:
-    """
+"""
    This is the robot's context
     """
+class Robot:
+    """
+   the state represents the robot's current state
+    """
+    _my_map = None
 
     _state = None
-    """
-    A reference to the current state of the Context.
-    """
+
+    _transition_matrix = []
 
     def __init__(self, state: State, map) -> None:
         self.my_map = map
@@ -23,7 +26,6 @@ class Robot:
         """
         Change to another state
         """
-
         print(f"Context: Change state to {type(state).__name__}")
         self._state = state
         self._state.context = self
@@ -31,7 +33,6 @@ class Robot:
     """
     Sensing calls sensing class
     """
-
     def sensing(self):
         self._state.sensing(self.my_map)
     """
@@ -75,7 +76,7 @@ class SensingState(State):
         print("Sensing state handles sensing.")
         print("Sensing wants to change the state of the context.")
         print("We need to filter after sensing.")
-        self.context.filtering(map)
+        self.filtering(map)
         self.context.change_state(MovingState())
 
     def filtering(self, map) -> None:
@@ -89,7 +90,7 @@ class MovingState(State):
         print("Moving state handles moving.")
         print("Moving wants to change the state of the context.")
         print("We need to filter after moving.")
-        self.context.filtering(map)
+        self.filtering(map)
         self.context.change_state(SensingState())
 
     def filtering(self, map) -> None:
@@ -110,8 +111,14 @@ Need to add probability assignment, but where?? Does the robot do it himself? Is
 if __name__ == "__main__":
     #main
     """
-    Need to add while loop that loops the changing state context until we see a value of 98% or so given the test he gave us to go off of
+    Need to add while loop that loops the changing state context until we see a value of 98% or so given the test he gave us to go off of??
     """
+    """
+    Move/Sense format [W, N, E, S]
+    """
+    movements = [[0,1,0,0],[0,0,1,0],[0,0,1,0]]
+
+    sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
     WindMaze = [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
             [3.23, 3.23, -1.0, -1.0, -1.0, -1.0, 3.23],
