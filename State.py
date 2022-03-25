@@ -1,4 +1,5 @@
 from __future__ import annotations
+from operator import index
 import numpy as np
 import itertools
 from array import*
@@ -98,7 +99,7 @@ class SensingState(State):
             for j in range(len(map[i])):
                 if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
                     update = self.filtering(i, j, map[i][j], map, sense)
-                    map[i][j] = (update) * 10#+ (1-update)*(1-self.context._sensor_accuracy))
+                    map[i][j] = (update) * 1000#+ (1-update)*(1-self.context._sensor_accuracy))
                     total += 1
         
         # print("Sensing state handles sensing.")
@@ -117,6 +118,7 @@ class SensingState(State):
     def filtering(self, indexI, indexJ, checkNum, map, dir) -> None:
         if(checkNum > -1):
             print(checkNum)
+            length = len(map)
             #mult = np.multiply(self._sensing_matrix, dir)
             #print(mult)
             if dir == ([1,0,0,0]): #W
@@ -130,28 +132,28 @@ class SensingState(State):
                  #need to look east
             elif(dir == [0,0,0,1]): #S
                 if(indexI-1 < 0 or map[indexI-1][indexJ] == -1.00):
-                    checkNum = checkNum * .15 #misses an obstacle/barrier
+                    checkNum = checkNum * 15/100 #misses an obstacle/barrier
                     print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an open square
+                    checkNum = checkNum * 90/100 #know its an open square
 
                 if(indexJ-1 < 0 or map[indexI][indexJ-1] == -1.00):
-                     checkNum = checkNum * .15 #misses an obstacle/barrier
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an open square
+                    checkNum = checkNum * 90/100 #know its an open square
                 
-                if(indexI+1 >= len(map) or map[indexI+1][indexJ] == -1.00):
-                     checkNum = checkNum * .15 #misses an obstacle/barrier
+                if(indexI+1 == length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an open square
+                    checkNum = checkNum * 90/100 #know its an open square
                 
-                if(indexJ+1 >= len(map[indexI]) or map[indexI][indexJ+1] == -1.00):
-                     checkNum = checkNum * .85 #mistakes an open square for obstacle
+                if(indexJ+1 == length or (indexJ+1 < length and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * 85/100 #mistakes an open square for obstacle
                      print("find barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .1 #know its an obstacle
+                    checkNum = checkNum * 10/100 #know its an obstacle
             
             print(checkNum)
                  #need to look south
@@ -198,12 +200,12 @@ if __name__ == "__main__":
 
     sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
-    WindMaze = np.array =  [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
-                            [3.23, 3.23, -1.0, -1.0, -1.0, -1.0, 3.23],
-                            [3.23, 3.23, -1.0, 3.23, 3.23, -1.0, 3.23],
-                            [3.23, -1.0, -1.0, 3.23, 3.23, -1.0, 3.23],
-                            [3.23, 3.23, 3.23, 3.23, -1.0, -1.0, 3.23],
-                            [3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23]]
+    WindMaze = np.array =  [[1.0/31, 1.0/31, 1/31, 1/31, 1/31, 1/31, 1/31], 
+                            [1/31, 1/31, -1.0, -1.0, -1.0, -1.0, 1/31],
+                            [1/31, 1/31, -1.0, 1/31, 1/31, -1.0, 1/31],
+                            [1/31, -1.0, -1.0, 1/31, 1/31, -1.0, 1/31],
+                            [1/31, 1/31, 1/31, 1/31, -1.0, -1.0, 1/31],
+                            [1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31]]
     context = Robot(SensingState(), WindMaze)
     context.sensing(sense[0])
     context.show()
