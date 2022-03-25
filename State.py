@@ -3,6 +3,8 @@ import numpy as np
 import itertools
 from array import*
 from abc import ABC, abstractmethod
+#use this for math helps reduce the amount of code.
+import matplotlib.pyplot as plt
 
 """
    This is the robot's context
@@ -105,7 +107,13 @@ class SensingState(State):
         #self.filtering(map)
         self.context._my_map = map
         self.context.change_state(MovingState())
-
+        
+    #def filtering(self,_moving_matrix):
+     #   new_state = np.dot(_moving_matrix,np.dot(self.WindMaze,self.current_state))
+      #  new_state_normalized = new_state/np.sum(new_state)
+       # self.current_state = new_state_normalized
+        #return new_state_normalized
+    
     def filtering(self, indexI, indexJ, checkNum, map, dir) -> None:
         if(checkNum > -1):
             print(checkNum)
@@ -190,12 +198,12 @@ if __name__ == "__main__":
 
     sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
-    WindMaze = [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
-            [3.23, 3.23, -1.0, -1.0, -1.0, -1.0, 3.23],
-            [3.23, 3.23, -1.0, 3.23, 3.23, -1.0, 3.23],
-            [3.23, -1.0, -1.0, 3.23, 3.23, -1.0, 3.23],
-            [3.23, 3.23, 3.23, 3.23, -1.0, -1.0, 3.23],
-            [3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23]]
+    WindMaze = np.array =  [[3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23], 
+                            [3.23, 3.23, -1.0, -1.0, -1.0, -1.0, 3.23],
+                            [3.23, 3.23, -1.0, 3.23, 3.23, -1.0, 3.23],
+                            [3.23, -1.0, -1.0, 3.23, 3.23, -1.0, 3.23],
+                            [3.23, 3.23, 3.23, 3.23, -1.0, -1.0, 3.23],
+                            [3.23, 3.23, 3.23, 3.23, 3.23, 3.23, 3.23]]
     context = Robot(SensingState(), WindMaze)
     context.sensing(sense[0])
     context.show()
