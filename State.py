@@ -98,8 +98,8 @@ class SensingState(State):
         for i in range(len(map)):
             for j in range(len(map[i])):
                 if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
-                    update = self.filtering(i, j, map[i][j], map, sense)
-                    map[i][j] = (update) * 1000#+ (1-update)*(1-self.context._sensor_accuracy))
+                    update = self.filtering(i, j, map, sense)
+                    map[i][j] = map[i][j] * (update) * 1000#+ (1-update)*(1-self.context._sensor_accuracy))
                     total += 1
         
         # print("Sensing state handles sensing.")
@@ -115,10 +115,12 @@ class SensingState(State):
        # self.current_state = new_state_normalized
         #return new_state_normalized
     
-    def filtering(self, indexI, indexJ, checkNum, map, dir) -> None:
+    def filtering(self, indexI, indexJ, map, dir) -> None:
+        checkNum = 1
         if(checkNum > -1):
             print(checkNum)
             length = len(map)
+            width = len(map[indexI])
             #mult = np.multiply(self._sensing_matrix, dir)
             #print(mult)
             if dir == ([1,0,0,0]): #W
@@ -131,29 +133,29 @@ class SensingState(State):
                 pass
                  #need to look east
             elif(dir == [0,0,0,1]): #S
-                if(indexI-1 < 0 or map[indexI-1][indexJ] == -1.00):
-                    checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
+                    checkNum = checkNum * .15 #misses an obstacle/barrier
                     print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 90/100 #know its an open square
+                    checkNum = checkNum * .9 #know its an open square
 
-                if(indexJ-1 < 0 or map[indexI][indexJ-1] == -1.00):
-                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
+                     checkNum = checkNum * .15 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 90/100 #know its an open square
+                    checkNum = checkNum * .9 #know its an open square
                 
-                if(indexI+1 == length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
-                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                if(indexI+1 > width or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * .85 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 90/100 #know its an open square
+                    checkNum = checkNum * .1 #know its an obstacle
                 
-                if(indexJ+1 == length or (indexJ+1 < length and map[indexI][indexJ+1] == -1.00)):
-                     checkNum = checkNum * 85/100 #mistakes an open square for obstacle
+                if(indexJ+1 > length or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * .15 #mistakes an open square for obstacle
                      print("find barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 10/100 #know its an obstacle
+                    checkNum = checkNum * .9 #know its an obstacle
             
             print(checkNum)
                  #need to look south
