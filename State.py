@@ -18,17 +18,6 @@ class Robot:
 
     _state = None
 
-    _sensor_accuracy = .85
-    
-    """
-                       W   N   E   S    
-    """
-    _moving_matrix =[[.8, .1,  0, .1],  #W
-                     [.1, .8, .1,  0],  #N
-                     [ 0, .1, .8, .1],  #E
-                     [.1,  0, .1, .8]]  #S
-
-
     def __init__(self, state: State, map) -> None:
         self.my_map = map
         self.change_state(state)
@@ -97,15 +86,12 @@ class SensingState(State):
         total = 0
         for i in range(len(map)):
             for j in range(len(map[i])):
-                if(map[i][j] != -1): #add a check here with W,E,N,S in map and if we sense it, multiply it?
-                    update = self.filtering(i, j, map, sense)
-                    map[i][j] = map[i][j] * (update) * 1000#+ (1-update)*(1-self.context._sensor_accuracy))
-                    total += 1
-        
-        # print("Sensing state handles sensing.")
+                if(map[i][j] != -1): 
+                    update = self.filtering(i, j, map, sense) #filtering creates a multiplier for each spot
+                    map[i][j] = map[i][j] * (update) * 1000#
+                    total += map[i][j]
+                    
         print("Sensing wants to change the state of the context.")
-        #print("We need to filter after sensing.")
-        #self.filtering(map)
         self.context._my_map = map
         self.context.change_state(MovingState())
         
@@ -134,28 +120,28 @@ class SensingState(State):
                  #need to look east
             elif(dir == [0,0,0,1]): #S
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
-                    checkNum = checkNum * .15 #misses an obstacle/barrier
+                    checkNum = checkNum * 15/100 #misses an obstacle/barrier
                     print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an open square
+                    checkNum = checkNum * 90/100 #know its an open square
 
                 if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
-                     checkNum = checkNum * .15 #misses an obstacle/barrier
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an open square
+                    checkNum = checkNum * 90/100 #know its an open square
                 
-                if(indexI+1 > width or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
-                     checkNum = checkNum * .85 #misses an obstacle/barrier
+                if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * 85/100 #misses an obstacle/barrier
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .1 #know its an obstacle
+                    checkNum = checkNum * 1/10 #know its an obstacle
                 
-                if(indexJ+1 > length or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
-                     checkNum = checkNum * .15 #mistakes an open square for obstacle
+                if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * 15/100 #mistakes an open square for obstacle
                      print("find barrier ", checkNum)
                 else:
-                    checkNum = checkNum * .9 #know its an obstacle
+                    checkNum = checkNum * 90/100 #know its an obstacle
             
             print(checkNum)
                  #need to look south
@@ -167,28 +153,25 @@ class SensingState(State):
 
 
 class MovingState(State):
+       
+    """
+                       W   N   E   S    
+    """
+    _moving_matrix =[[.8, .1,  0, .1],  #W
+                     [.1, .8, .1,  0],  #N
+                     [ 0, .1, .8, .1],  #E
+                     [.1,  0, .1, .8]]  #S
+
     def moving(self, map, move) -> None:
-        #print("Moving state handles moving.")
-        print("Moving wants to change the state of the context.")
         #print("We need to filter after moving.")
-        self.filtering(map)
         self.context.change_state(SensingState())
 
-    def filtering(self, map) -> None:
-        pass
-        #print("Moving state handles filtering request.")
-        #self.context.transition_to(ConcreteStateA())
+    def filtering(self, indexI, indexJ, map, dir) -> None:
+        checkNum = 1
+        print(checkNum)
+        return checkNum
     def sensing(self, map) -> None:
         pass
-
-
-"""
-Need to add adjustments to accept the maze into the classes, the maze is our little robot's map
-
-"""
-"""
-Need to add probability assignment, but where?? Does the robot do it himself? Is there another class we need?
-"""
 
 if __name__ == "__main__":
     #main
@@ -211,5 +194,6 @@ if __name__ == "__main__":
     context = Robot(SensingState(), WindMaze)
     context.sensing(sense[0])
     context.show()
-    context.moving(movements)
+    #context.moving(movements[0])
+    #context.show()
 #print (WindMaze)
