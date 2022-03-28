@@ -1,13 +1,9 @@
 from __future__ import annotations
 from operator import index
-import numpy 
 import itertools
 from array import*
 from abc import ABC, abstractmethod
-<<<<<<< Updated upstream
-=======
 #use this for math helps reduce the amount of code.
->>>>>>> Stashed changes
 
 """
    This is the robot's context
@@ -223,46 +219,47 @@ class MovingState(State):
                      [.8, .1, .8, .1],  #E
                      [.1, .8, .1, .8]]  #S
     """
-    def moving(self, map, move) -> None:
-        for i in range(len(WindMaze)):
-            for j in range(len(WindMaze[0])):
+    def moving(self, map, move, _my_map) -> None:
+        for i in range(len(_my_map)):
+            for j in range(len(_my_map[0])):
                 if map[i][j] ==-1:
                 
                     #WE GO NORTH LETS GO
                     if move == "N":
-                        if j-1 < 0 or WindMaze[i][j] == -1:
+                        if j-1 < 0 or _my_map[i][j] == -1:
                             (.1*map[i][j])
                         else:
                             (.1*map[i][j-1])
-                        if i - 1 < 0 or WindMaze[i-1][j] == -1:
+                        if i - 1 < 0 or _my_map[i-1][j] == -1:
                             (.8*map[i][j])
-                        if j+1 >= len(WindMaze) or WindMaze[i][j+1] == -1:
+                        if j+1 >= len(_my_map) or _my_map[i][j+1] == -1:
                             (.1*map[i][j])
                         else:
                             (.1*map[i][j+1])
                         
                         if i+1 >= 6:
                             pass
-                        elif WindMaze[i+1][j] != -1:
+                        elif _my_map[i+1][j] != -1:
                             (.8*map[i][j+1])
                             
                     #WE GO EAST        
                     if move == "E":
-                        if j-1 < 0 or WindMaze[i][j] == -1:
+                        if j-1 < 0 or _my_map[i][j] == -1:
                             (.1*map[i][j])
-                        if i - 1 < 0 or WindMaze[i-1][j] == -1:
+                        if i - 1 < 0 or _my_map[i-1][j] == -1:
                             (.8*map[i][j])
                         else:
                             (.8*map[i][j+1])
-                        if i+1 >= 6 or WindMaze[i+1][j] == -1:
+                        if i+1 >= 6 or _my_map[i+1][j] == -1:
                             (.1*map[i][j])
                         else:
                             (.1*map[i+1][j])
-                        if j+1 >= len(WindMaze) or WindMaze[i][j+1] == -1:
+                        if j+1 >= len(_my_map) or _my_map[i][j+1] == -1:
                             pass
                         else:
                             (.8*map[i][j+1])
-                              
+
+        self.context._my_map = map                      
         self.context.change_state(SensingState())
 
 
