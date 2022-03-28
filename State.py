@@ -4,8 +4,6 @@ import numpy as np
 import itertools
 from array import*
 from abc import ABC, abstractmethod
-#use this for math helps reduce the amount of code.
-import matplotlib.pyplot as plt
 
 """
    This is the robot's context
@@ -95,11 +93,6 @@ class SensingState(State):
         self.context._my_map = map
         self.context.change_state(MovingState())
         
-    #def filtering(self,_moving_matrix):
-     #   new_state = np.dot(_moving_matrix,np.dot(self.WindMaze,self.current_state))
-      #  new_state_normalized = new_state/np.sum(new_state)
-       # self.current_state = new_state_normalized
-        #return new_state_normalized
     
     def filtering(self, indexI, indexJ, map, dir) -> None:
         checkNum = 1
@@ -153,18 +146,87 @@ class SensingState(State):
 
 
 class MovingState(State):
-       
     """
                        W   N   E   S    
+    
+    moving_matrix =[[.8, .1, .8, .1],  #W
+                     [.1, .8, .1, .8],  #N
+                     [.8, .1, .8, .1],  #E
+                     [.1, .8, .1, .8]]  #S
     """
-    _moving_matrix =[[.8, .1,  0, .1],  #W
-                     [.1, .8, .1,  0],  #N
-                     [ 0, .1, .8, .1],  #E
-                     [.1,  0, .1, .8]]  #S
-
     def moving(self, map, move) -> None:
-        #print("We need to filter after moving.")
+        chance=[]
+        for row in range(len(map)):
+            for collum in range(len(map[0])):
+                if map[row][collum] ==-1:
+                    
+                    #WE GO NORTH LETS GO
+                    if move == "N":
+                        if collum-1 < 0 or map[row][collum] == -1:
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.8*map[row][collum])
+                        else:
+                            chance.append(.1*map[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.8*map[row][collum+1])
+                            
+                    #WE GO EAST        
+                    if move == "E":
+                        if collum-1 < 0 or map[row][collum] == -1:
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.8*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.8*map[row][collum])
+                        else:
+                            chance.append(.8*map[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.8*map[row][collum+1])
+                            
+                    #WE GOING DOWN SOUTH         
+                    if move == "S":
+                        if collum-1 < 0 or map[row][collum] == -1:
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.8*map[row][collum])
+                        else:
+                            chance.append(.1*map[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.8*map[row][collum+1])
+                            
+                    # GOING ON WEST DOWN THE ORIGON TRAIL    
+                    if move == "W":
+                        if collum-1 < 0 or map[row][collum] == -1:
+                            chance.append(.8*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.1*map[row][collum])
+                        else:
+                            chance.append(.1*map[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.1*map[row][collum+1])
+                            
         self.context.change_state(SensingState())
+
+
 
     def filtering(self, indexI, indexJ, map, dir) -> None:
         checkNum = 1
@@ -182,6 +244,10 @@ if __name__ == "__main__":
     Move/Sense format [W, N, E, S]
     """
     movements = [[0,1,0,0],[0,0,1,0],[0,0,1,0]]
+    N = [0,1,0,0]
+    E = [0,0,1,0]
+    S = [0,0,0,1]
+    W = [1,0,0,0]
 
     sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
@@ -194,6 +260,5 @@ if __name__ == "__main__":
     context = Robot(SensingState(), WindMaze)
     context.sensing(sense[0])
     context.show()
-    #context.moving(movements[0])
-    #context.show()
-#print (WindMaze)
+    context.moving(movements[0])
+    context.show()
