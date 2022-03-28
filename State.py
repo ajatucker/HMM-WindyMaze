@@ -219,48 +219,45 @@ class MovingState(State):
                      [.1, .8, .1, .8]]  #S
     """
     def moving(self, map, move) -> None:
-        chance=[]
-        for row in range(len(WindMaze)):
-            for collum in range(len(WindMaze[0])):
-                if map[row][collum] ==-1:
+        for i in range(len(WindMaze)):
+            for j in range(len(WindMaze[0])):
+                if map[i][j] ==-1:
+                
                     #WE GO NORTH LETS GO
                     if move == "N":
-                        if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*map[row][collum])
+                        if j-1 < 0 or WindMaze[i][j] == -1:
+                            (.1*map[i][j])
                         else:
-                            chance.append(.1*map[row][collum-1])
-                        if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.8*map[row][collum])
-                        if collum+1 >= len(map) or map[row][collum+1] == -1:
-                            chance.append(0.1*map[row][collum])
+                            (.1*map[i][j-1])
+                        if i - 1 < 0 or WindMaze[i-1][j] == -1:
+                            (.8*map[i][j])
+                        if j+1 >= len(WindMaze) or WindMaze[i][j+1] == -1:
+                            (.1*map[i][j])
                         else:
-                            chance.append(.1*map[row][collum+1])
+                            (.1*map[i][j+1])
                         
-                        if row+1 >= 6:
+                        if i+1 >= 6:
                             pass
-                        elif map[row+1][collum] != -1:
-                            chance.append(.8*map[row][collum+1])
+                        elif WindMaze[i+1][j] != -1:
+                            (.8*map[i][j+1])
                             
                     #WE GO EAST        
                     if move == "E":
-                        if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*map[row][collum])
-                        if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.8*map[row][collum])
+                        if j-1 < 0 or WindMaze[i][j] == -1:
+                            (.1*map[i][j])
+                        if i - 1 < 0 or WindMaze[i-1][j] == -1:
+                            (.8*map[i][j])
                         else:
-                            chance.append(.8*map[row][collum+1])
-                        if row+1 >= 6 or map[row+1][collum] == -1:#down
-                            chance.append(0.1*map[row][collum])#bounce back
+                            (.8*map[i][j+1])
+                        if i+1 >= 6 or WindMaze[i+1][j] == -1:
+                            (.1*map[i][j])
                         else:
-                            chance.append(0.1*map[row+1][map])
-                        if collum+1 >= len(map) or map[row][collum+1] == -1:#right
-                            pass#bounce back
+                            (.1*map[i+1][j])
+                        if j+1 >= len(WindMaze) or WindMaze[i][j+1] == -1:
+                            pass
                         else:
-                            collum.append(0.8*map[row][collum+1])
-            
-                          
-                            
-        self.context._my_map = chance                    
+                            (.8*map[i][j+1])
+                              
         self.context.change_state(SensingState())
 
 
