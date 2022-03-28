@@ -4,6 +4,10 @@ import numpy
 import itertools
 from array import*
 from abc import ABC, abstractmethod
+<<<<<<< Updated upstream
+=======
+#use this for math helps reduce the amount of code.
+>>>>>>> Stashed changes
 
 """
    This is the robot's context
