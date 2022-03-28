@@ -220,8 +220,8 @@ class MovingState(State):
     """
     def moving(self, map, move) -> None:
         chance=[]
-        for row in range(len(map)):
-            for collum in range(len(map[0])):
+        for row in range(len(WindMaze)):
+            for collum in range(len(WindMaze[0])):
                 if map[row][collum] ==-1:
                     #WE GO NORTH LETS GO
                     if move == "N":
@@ -231,6 +231,8 @@ class MovingState(State):
                             chance.append(.1*map[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
                             chance.append(.8*map[row][collum])
+                        if collum+1 >= len(map) or map[row][collum+1] == -1:
+                            chance.append(0.1*map[row][collum])
                         else:
                             chance.append(.1*map[row][collum+1])
                         
@@ -243,49 +245,21 @@ class MovingState(State):
                     if move == "E":
                         if collum-1 < 0 or map[row][collum] == -1:
                             chance.append(.1*map[row][collum])
-                        else:
-                            chance.append(.8*map[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
                             chance.append(.8*map[row][collum])
                         else:
                             chance.append(.8*map[row][collum+1])
-                        
-                        if row+1 >= 6:
-                            pass
-                        elif map[row+1][collum] != -1:
-                            chance.append(.8*map[row][collum+1])
+                        if row+1 >= 6 or map[row+1][collum] == -1:#down
+                            chance.append(0.1*map[row][collum])#bounce back
+                        else:
+                            chance.append(0.1*map[row+1][map])
+                        if collum+1 >= len(map) or map[row][collum+1] == -1:#right
+                            pass#bounce back
+                        else:
+                            collum.append(0.8*map[row][collum+1])
+            
+                          
                             
-                    #WE GOING DOWN SOUTH         
-                    if move == "S":
-                        if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*WindMaze[row][collum])
-                        else:
-                            chance.append(.1*WindMaze[row][collum-1])
-                        if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.8*map[row][collum])
-                        else:
-                            chance.append(.1*map[row][collum+1])
-                        
-                        if row+1 >= 6:
-                            pass
-                        elif WindMaze[row+1][collum] != -1:
-                            chance.append(.8*map[row][collum+1])
-                            
-                    # GOING ON WEST DOWN THE ORIGON TRAIL    
-                    if move == "W":
-                        if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.8*WindMaze[row][collum])
-                        else:
-                            chance.append(.1*WindMaze[row][collum-1])
-                        if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.1*map[row][collum])
-                        else:
-                            chance.append(.1*map[row][collum+1])
-                        
-                        if row+1 >= 6:
-                            pass
-                        elif WindMaze[row+1][collum] != -1:
-                            chance.append(.1*map[row][collum+1])
         self.context._my_map = chance                    
         self.context.change_state(SensingState())
 
@@ -315,7 +289,7 @@ if __name__ == "__main__":
 
     sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
-    WindMaze = np.array =  [[1.0/31, 1.0/31, 1/31, 1/31, 1/31, 1/31, 1/31], 
+    WindMaze = array =  [[1.0/31, 1.0/31, 1/31, 1/31, 1/31, 1/31, 1/31], 
                             [1/31, 1/31, -1.0, -1.0, -1.0, -1.0, 1/31],
                             [1/31, 1/31, -1.0, 1/31, 1/31, -1.0, 1/31],
                             [1/31, -1.0, -1.0, 1/31, 1/31, -1.0, 1/31],
