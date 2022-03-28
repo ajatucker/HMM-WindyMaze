@@ -257,6 +257,9 @@ class MovingState(State):
                             pass
                         else:
                             map[i][j] += (.8*map[i][j+1])
+        for i in range(len(map)):
+            for j in range(len(map[0])):
+                
         self.context._my_map = map                      
         self.context.change_state(SensingState())
 
