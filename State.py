@@ -223,13 +223,12 @@ class MovingState(State):
         for row in range(len(map)):
             for collum in range(len(map[0])):
                 if map[row][collum] ==-1:
-                    
                     #WE GO NORTH LETS GO
                     if move == "N":
                         if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*WindMaze[row][collum])
+                            chance.append(.1*map[row][collum])
                         else:
-                            chance.append(.1*WindMaze[row][collum-1])
+                            chance.append(.1*map[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
                             chance.append(.8*map[row][collum])
                         else:
@@ -237,15 +236,15 @@ class MovingState(State):
                         
                         if row+1 >= 6:
                             pass
-                        elif WindMaze[row+1][collum] != -1:
+                        elif map[row+1][collum] != -1:
                             chance.append(.8*map[row][collum+1])
                             
                     #WE GO EAST        
                     if move == "E":
                         if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*WindMaze[row][collum])
+                            chance.append(.1*map[row][collum])
                         else:
-                            chance.append(.8*WindMaze[row][collum-1])
+                            chance.append(.8*map[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
                             chance.append(.8*map[row][collum])
                         else:
@@ -253,7 +252,7 @@ class MovingState(State):
                         
                         if row+1 >= 6:
                             pass
-                        elif WindMaze[row+1][collum] != -1:
+                        elif map[row+1][collum] != -1:
                             chance.append(.8*map[row][collum+1])
                             
                     #WE GOING DOWN SOUTH         
@@ -307,7 +306,8 @@ if __name__ == "__main__":
     """
     Move/Sense format [W, N, E, S]
     """
-    movements = [[0,1,0,0],[0,0,1,0],[0,0,1,0]]
+    #movements = [[0,1,0,0],[0,0,1,0],[0,0,1,0]]
+    movements = ["N","E","E"]
     N = [0,1,0,0]
     E = [0,0,1,0]
     S = [0,0,0,1]
