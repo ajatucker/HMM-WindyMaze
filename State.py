@@ -226,20 +226,22 @@ class MovingState(State):
                 if map[i][j] !=-1:
                     if move == "N":
                         if j-1 < 0 or (j-1 < width and map[i][j-1] == -1.00):
-                            pass#map[i][j] += (.1*map[i][j])
+                            map[i][j] += (.1*map[i][j])
                         else:
-                             map[i][j] += (.1*map[i][j-1])
-                        if i - 1 < 0 or (i-1 < length and map[i-1][j] == -1.00):
-                             pass#map[i][j] = (.8*map[i][j])
+                             map[i][j] += (.1*map[i][j])
+                        if i - 1 > 0 or (i-1 < length and map[i-1][j] != -1.00):
+                             map[i][j] += (.8*map[i][j])
+                        else:
+                            map[i][j] += (.1*map[i][j])
                         if j+1 >= len(map[0]) or(j+1 < width and map[i][j+1] == -1.00):
                              map[i][j] += (.1*map[i][j])
                         else:
-                            map[i][j] += (.1*map[i][j])#map[i][j] += (.1*map[i][j+1])
+                            map[i][j] += (.1*map[i][j])
                         
-                        if i+1 >= 6:
-                            pass
-                        elif i+1 >= 6 or (i < length and map[i+1][j] == -1.00):
-                             map[i][j] += (.8*map[i][j])
+                        if i+1 < length or (i+1 < length and map[i+1][j] != -1.00):
+                            pass #map[i][j] = (.8*map[i][j])
+                        elif i+1 >= length or (i+1 < length and map[i+1][j] == -1.00):
+                           pass# map[i][j] = (.1*map[i][j])
                             
                     #WE GO EAST        
                     elif move == "E":
