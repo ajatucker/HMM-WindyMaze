@@ -100,16 +100,80 @@ class SensingState(State):
             print(checkNum)
             length = len(map)
             width = len(map[indexI])
-            #mult = np.multiply(self._sensing_matrix, dir)
-            #print(mult)
             if dir == ([1,0,0,0]): #W
-                pass
+                if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
+                    checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                    print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an open square
+
+                if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
+                     checkNum = checkNum * 85/100 
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 1/10 
+                
+                if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * 15/100 
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 
+                
+                if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * 15/100 
+                     print("find barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 
                 #need to look west
             elif (dir == ([0,1,0,0])): #N
-                pass
+                if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
+                    checkNum = checkNum * 85/100
+                    print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 1/10
+
+                if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an open square
+                
+                if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an obstacle
+                
+                if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * 15/100 #know its an obstacle
+                     print("find barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100
                  #need to look north
             elif(dir == [0,0,1,0]): #E
-                pass
+                if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
+                    checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                    print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an open square
+
+                if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an open square
+                
+                if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
+                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
+                     print("miss barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 90/100 #know its an obstacle
+                
+                if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
+                     checkNum = checkNum * 85/100 #know its an obstacle
+                     print("find barrier ", checkNum)
+                else:
+                    checkNum = checkNum * 1/10 
                  #need to look east
             elif(dir == [0,0,0,1]): #S
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
@@ -125,16 +189,16 @@ class SensingState(State):
                     checkNum = checkNum * 90/100 #know its an open square
                 
                 if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
-                     checkNum = checkNum * 85/100 #misses an obstacle/barrier
+                     checkNum = checkNum * 85/100 #know its an obstacle
                      print("miss barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 1/10 #know its an obstacle
+                    checkNum = checkNum * 1/10 
                 
                 if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
-                     checkNum = checkNum * 15/100 #mistakes an open square for obstacle
+                     checkNum = checkNum * 15/100 
                      print("find barrier ", checkNum)
                 else:
-                    checkNum = checkNum * 90/100 #know its an obstacle
+                    checkNum = checkNum * 90/100 
             
             print(checkNum)
                  #need to look south
@@ -223,7 +287,7 @@ class MovingState(State):
                             pass
                         elif WindMaze[row+1][collum] != -1:
                             chance.append(.1*map[row][collum+1])
-                            
+        self.context._my_map = chance                    
         self.context.change_state(SensingState())
 
 
@@ -262,3 +326,4 @@ if __name__ == "__main__":
     context.show()
     context.moving(movements[0])
     context.show()
+
