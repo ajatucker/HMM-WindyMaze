@@ -1,6 +1,6 @@
 from __future__ import annotations
 from operator import index
-import numpy as np
+import numpy 
 import itertools
 from array import*
 from abc import ABC, abstractmethod
@@ -43,7 +43,8 @@ class Robot:
     def filtering(self):
         self._state.filtering(self.my_map)
     
-    def show(self):
+    def printMatrix(self):
+        #print('\n'.join([''.join(['{:3}'.format(item) for item in row]) for row in self._my_map]))
         rows = [' '.join(map(lambda x:'{0:.2f}'.format(x),r)) + ' ' for r in self._my_map]
         print(' ' + '\n '.join(rows) + ' ')
 
@@ -81,13 +82,13 @@ class SensingState(State):
     """        
 
     def sensing(self, map, sense) -> None:
-        total = 0
+        #total = 0
         for i in range(len(map)):
             for j in range(len(map[i])):
                 if(map[i][j] != -1): 
                     update = self.filtering(i, j, map, sense) #filtering creates a multiplier for each spot
                     map[i][j] = map[i][j] * (update) * 1000#
-                    total += map[i][j]
+                    #total += map[i][j]
                     
         print("Sensing wants to change the state of the context.")
         self.context._my_map = map
@@ -219,7 +220,7 @@ class MovingState(State):
                      [.1, .8, .1, .8]]  #S
     """
     def moving(self, map, move) -> None:
-        chance=[]
+        chance = []
         for row in range(len(WindMaze)):
             for collum in range(len(WindMaze[0])):
                 if map[row][collum] ==-1:
@@ -228,39 +229,67 @@ class MovingState(State):
                         if collum-1 < 0 or map[row][collum] == -1:
                             chance.append(.1*map[row][collum])
                         else:
-                            chance.append(.1*map[row][collum-1])
+                            chance.append(.1*WindMaze[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.8*map[row][collum])
-                        if collum+1 >= len(map) or map[row][collum+1] == -1:
-                            chance.append(0.1*map[row][collum])
+                            chance.append(.8*WindMaze[row][collum])
                         else:
                             chance.append(.1*map[row][collum+1])
                         
                         if row+1 >= 6:
                             pass
                         elif map[row+1][collum] != -1:
-                            chance.append(.8*map[row][collum+1])
+                            chance.append(.8*WindMaze[row][collum+1])
                             
                     #WE GO EAST        
                     if move == "E":
                         if collum-1 < 0 or map[row][collum] == -1:
-                            chance.append(.1*map[row][collum])
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.8*WindMaze[row][collum-1])
                         if row - 1 < 0 or map[row-1][collum] == -1:
-                            chance.append(.8*map[row][collum])
+                            chance.append(.8*WindMaze[row][collum])
                         else:
-                            chance.append(.8*map[row][collum+1])
-                        if row+1 >= 6 or map[row+1][collum] == -1:#down
-                            chance.append(0.1*map[row][collum])#bounce back
-                        else:
-                            chance.append(0.1*map[row+1][map])
-                        if collum+1 >= len(map) or map[row][collum+1] == -1:#right
-                            pass#bounce back
-                        else:
-                            collum.append(0.8*map[row][collum+1])
-            
-                          
+                            chance.append(.8*WindMaze[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif map[row+1][collum] != -1:
+                            chance.append(.8*WindMaze[row][collum+1])
                             
-        self.context._my_map = chance                    
+                    #WE GOING DOWN SOUTH         
+                    if move == "S":
+                        if collum-1 < 0 or map[row][collum-1] == -1:
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.8*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.8*WindMaze[row][collum+1])
+                            
+                    # GOING ON WEST DOWN THE ORIGON TRAIL    
+                    if move == "W":
+                        if collum-1 < 0 or map[row][collum] == -1:
+                            chance.append(.8*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum-1])
+                        if row - 1 < 0 or map[row-1][collum] == -1:
+                            chance.append(.1*WindMaze[row][collum])
+                        else:
+                            chance.append(.1*WindMaze[row][collum+1])
+                        
+                        if row+1 >= 6:
+                            pass
+                        elif WindMaze[row+1][collum] != -1:
+                            chance.append(.1*WindMaze[row][collum+1])
+        
+        print(chance)
+        self.context._my_map = chance
         self.context.change_state(SensingState())
 
 
@@ -289,7 +318,7 @@ if __name__ == "__main__":
 
     sense = [[0, 0, 0, 1],[0, 1, 0, 0],[0, 1, 0, 0],[0, 0, 1, 0]]
 
-    WindMaze = array =  [[1.0/31, 1.0/31, 1/31, 1/31, 1/31, 1/31, 1/31], 
+    WindMaze = array =  [[1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31], 
                             [1/31, 1/31, -1.0, -1.0, -1.0, -1.0, 1/31],
                             [1/31, 1/31, -1.0, 1/31, 1/31, -1.0, 1/31],
                             [1/31, -1.0, -1.0, 1/31, 1/31, -1.0, 1/31],
@@ -297,7 +326,7 @@ if __name__ == "__main__":
                             [1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31]]
     context = Robot(SensingState(), WindMaze)
     context.sensing(sense[0])
-    context.show()
+    context.printMatrix()
     context.moving(movements[0])
-    context.show()
+    context.printMatrix()
 
