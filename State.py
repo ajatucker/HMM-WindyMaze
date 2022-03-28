@@ -88,7 +88,6 @@ class SensingState(State):
                 if(map[i][j] != -1): 
                     update = self.filtering(i, j, map, sense) #filtering creates a multiplier for each spot
                     map[i][j] = map[i][j] * (update) * 1000#
-                    #total += map[i][j]
                     
         print("Sensing wants to change the state of the context.")
         self.context._my_map = map
@@ -220,53 +219,91 @@ class MovingState(State):
                      [.1, .8, .1, .8]]  #S
     """
     def moving(self, map, move) -> None:
+        length = len(map)
+        width = len(map[0])
         for i in range(len(map)):
             for j in range(len(map[0])):
                 if map[i][j] !=-1:
-                    #WE GO NORTH LETS GO
                     if move == "N":
-                        if j-1 < 0 or map[i][j-1] == -1:
-                            map[i][j] += (.1*map[i][j])
+                        if j-1 < 0 or (j-1 < width and map[i][j-1] == -1.00):
+                            pass#map[i][j] += (.1*map[i][j])
                         else:
-                             map[i][j] += (.1*map[i][j])
-                        if i - 1 < 0 or map[i-1][j] == -1:
-                             map[i][j] += (.8*map[i][j])
-                        if j+1 > len(map) or map[i][j+1] == -1:
+                             map[i][j] += (.1*map[i][j-1])
+                        if i - 1 < 0 or (i-1 < length and map[i-1][j] == -1.00):
+                             pass#map[i][j] = (.8*map[i][j])
+                        if j+1 >= len(map[0]) or(j+1 < width and map[i][j+1] == -1.00):
                              map[i][j] += (.1*map[i][j])
                         else:
-                            map[i][j] += (.1*map[i][j+1])
+                            map[i][j] += (.1*map[i][j])#map[i][j] += (.1*map[i][j+1])
                         
                         if i+1 >= 6:
                             pass
-                        elif map[i+1][j] != -1:
+                        elif i+1 >= 6 or (i < length and map[i+1][j] == -1.00):
                              map[i][j] += (.8*map[i][j])
                             
                     #WE GO EAST        
-                    if move == "E":
-                        if j-1 < 0 or self.context._my_map[i][j] == -1:
+                    elif move == "E":
+                        if j-1 < 0 or map[i][j] == -1:
                             map[i][j] = (.1*map[i][j])
-                        if i - 1 < 0 or self.context._my_map[i-1][j] == -1:
-                            map[i][j] += (.8*map[i][j])
+                        if i - 1 < 0 or map[i-1][j] == -1:
+                            map[i][j] = (.8*map[i][j])
                         else:
                             map[i][j] = (.8*map[i][j+1])
-                        if i+1 >= 6 or self.context._my_map[i+1][j] == -1:
-                            map[i][j] += (.1*map[i][j])
+                        if i+1 >= length or map[i+1][j] == -1:
+                            map[i][j] = (.1*map[i][j])
                         else:
-                            map[i][j] += (.1*map[i+1][j])
-                        if j+1 >= len(self.context._my_map) or self.context._my_map[i][j+1] == -1:
+                            map[i][j] = (.1*map[i+1][j])
+                        if j+1 >= len(map[0]) or map[i][j+1] == -1:
                             pass
                         else:
-                            map[i][j] += (.8*map[i][j+1])
-        for i in range(len(map)):
-            for j in range(len(map[0])):
-                
+                            map[i][j] = (.8*map[i][j+1])
+
         self.context._my_map = map                      
         self.context.change_state(SensingState())
 
 
 
-    def filtering(self, indexI, indexJ, map, dir) -> None:
-        checkNum = 1
+    def filtering(self, indexI, indexJ, map, move) -> None:
+        checkNum = map[indexI][indexJ]
+        length = len(map)
+        width = len(map[0])
+        addNum = 0
+        #WE GO NORTH LETS GO
+        if move == "N":
+            if indexJ-1 < 0 or (indexJ-1 < width and map[indexI][indexJ-1] == -1.00):
+                pass#map[i][j] += (.1*map[i][j])
+            else:
+                addNum += (.1*checkNum)
+            if indexI - 1 < 0 or (indexI-1 < length and map[indexI-1][indexJ] == -1.00):
+                pass#map[i][j] = (.8*map[i][j])
+            if indexJ+1 >= len(map[0]) or(j+1 < width and map[indexI][indexJ+1] == -1.00):
+                addNum += (.1*checkNum)
+            else:
+               addNum += (.1*checkNum)#map[i][j] += (.1*map[i][j+1])
+                        
+            if indexI+1 >= 6:
+                pass
+            elif indexI+1 >= 6 or (i < length and map[indexI+1][indexJ] == -1.00):
+                addNum += (.8*checkNum)
+                            
+                    #WE GO EAST        
+        elif move == "E":
+            if indexJ-1 < 0 or map[indexI][indexJ-1] == -1:
+                map[indexI][indexJ] = (.1*map[indexI][indexJ])
+            if indexI - 1 < 0 or map[indexI-1][indexJ] == -1:
+                map[indexI][indexJ] = (.8*map[indexI][indexJ])
+            else:
+                map[indexI][indexJ] = (.8*map[indexI][indexJ])
+            if indexI+1 >= length or map[indexI+1][indexJ] == -1:
+                map[indexI][indexJ] = (.1*map[indexI][indexJ])
+            else:
+                map[indexI][indexJ] = (.1*map[indexI+1][indexJ])
+            if indexJ+1 >= len(map[0]) or map[indexI][indexJ+1] == -1:
+                pass
+            else:
+                map[indexI][indexJ] = (.8*map[indexI][indexJ])            
+        
+        checknum = addNum /(addNum + checkNum)
         print(checkNum)
         return checkNum
     def sensing(self, map) -> None:
@@ -296,6 +333,7 @@ if __name__ == "__main__":
                             [1/31, 1/31, 1/31, 1/31, -1.0, -1.0, 1/31],
                             [1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31]]
     context = Robot(SensingState(), WindMaze)
+    context.printMatrix()
     context.sensing(sense[0])
     context.printMatrix()
     context.moving(movements[0])
