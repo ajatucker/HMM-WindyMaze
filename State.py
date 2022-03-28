@@ -17,7 +17,7 @@ class Robot:
     _state = None
 
     def __init__(self, state: State, map) -> None:
-        self.my_map = map
+        self._my_map = map
         self.change_state(state)
         
 
@@ -33,15 +33,15 @@ class Robot:
     Sensing calls sensing class
     """
     def sensing(self, senses):
-        self._state.sensing(self.my_map, senses)
+        self._state.sensing(self._my_map, senses)
     """
     Moving calls moving class
     """
     def moving(self, moves):
-        self._state.moving(self.my_map, moves)
+        self._state.moving(self._my_map, moves)
     
     def filtering(self):
-        self._state.filtering(self.my_map)
+        self._state.filtering(self._my_map)
     
     def printMatrix(self):
         #print('\n'.join([''.join(['{:3}'.format(item) for item in row]) for row in self._my_map]))
@@ -219,46 +219,44 @@ class MovingState(State):
                      [.8, .1, .8, .1],  #E
                      [.1, .8, .1, .8]]  #S
     """
-    def moving(self, map, move, _my_map) -> None:
-        for i in range(len(_my_map)):
-            for j in range(len(_my_map[0])):
-                if map[i][j] ==-1:
-                
+    def moving(self, map, move) -> None:
+        for i in range(len(map)):
+            for j in range(len(map[0])):
+                if map[i][j] !=-1:
                     #WE GO NORTH LETS GO
                     if move == "N":
-                        if j-1 < 0 or _my_map[i][j] == -1:
-                            (.1*map[i][j])
+                        if j-1 < 0 or map[i][j-1] == -1:
+                            map[i][j] += (.1*map[i][j])
                         else:
-                            (.1*map[i][j-1])
-                        if i - 1 < 0 or _my_map[i-1][j] == -1:
-                            (.8*map[i][j])
-                        if j+1 >= len(_my_map) or _my_map[i][j+1] == -1:
-                            (.1*map[i][j])
+                             map[i][j] += (.1*map[i][j])
+                        if i - 1 < 0 or map[i-1][j] == -1:
+                             map[i][j] += (.8*map[i][j])
+                        if j+1 > len(map) or map[i][j+1] == -1:
+                             map[i][j] += (.1*map[i][j])
                         else:
-                            (.1*map[i][j+1])
+                            map[i][j] += (.1*map[i][j+1])
                         
                         if i+1 >= 6:
                             pass
-                        elif _my_map[i+1][j] != -1:
-                            (.8*map[i][j+1])
+                        elif map[i+1][j] != -1:
+                             map[i][j] += (.8*map[i][j])
                             
                     #WE GO EAST        
                     if move == "E":
-                        if j-1 < 0 or _my_map[i][j] == -1:
-                            (.1*map[i][j])
-                        if i - 1 < 0 or _my_map[i-1][j] == -1:
-                            (.8*map[i][j])
+                        if j-1 < 0 or self.context._my_map[i][j] == -1:
+                            map[i][j] = (.1*map[i][j])
+                        if i - 1 < 0 or self.context._my_map[i-1][j] == -1:
+                            map[i][j] += (.8*map[i][j])
                         else:
-                            (.8*map[i][j+1])
-                        if i+1 >= 6 or _my_map[i+1][j] == -1:
-                            (.1*map[i][j])
+                            map[i][j] = (.8*map[i][j+1])
+                        if i+1 >= 6 or self.context._my_map[i+1][j] == -1:
+                            map[i][j] += (.1*map[i][j])
                         else:
-                            (.1*map[i+1][j])
-                        if j+1 >= len(_my_map) or _my_map[i][j+1] == -1:
+                            map[i][j] += (.1*map[i+1][j])
+                        if j+1 >= len(self.context._my_map) or self.context._my_map[i][j+1] == -1:
                             pass
                         else:
-                            (.8*map[i][j+1])
-
+                            map[i][j] += (.8*map[i][j+1])
         self.context._my_map = map                      
         self.context.change_state(SensingState())
 
