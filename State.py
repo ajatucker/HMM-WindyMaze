@@ -221,27 +221,27 @@ class MovingState(State):
     def moving(self, map, move) -> None:
         length = len(map)
         width = len(map[0])
-        for i in range(len(map)):
-            for j in range(len(map[0])):
-                if map[i][j] !=-1:
+        moving_map = map
+        for row in range(len(map)):
+            for col in range(len(map[0])):
+                moving_map[row][col] = map[row][col]
+
+        for i in range(len(moving_map)):
+            for j in range(len(moving_map[0])):
+                if moving_map[i][j] ==-1:
+                    #continue
                     if move == "N":
-                        if j-1 < 0 or (j-1 < width and map[i][j-1] == -1.00):
-                            map[i][j] += (.1*map[i][j])
-                        else:
-                             map[i][j] += (.1*map[i][j])
-                        if i - 1 > 0 or (i-1 < length and map[i-1][j] != -1.00):
-                             map[i][j] += (.8*map[i][j])
-                        else:
-                            map[i][j] += (.1*map[i][j])
-                        if j+1 >= len(map[0]) or(j+1 < width and map[i][j+1] == -1.00):
-                             map[i][j] += (.1*map[i][j])
-                        else:
-                            map[i][j] += (.1*map[i][j])
-                        
-                        if i+1 < length or (i+1 < length and map[i+1][j] != -1.00):
-                            pass #map[i][j] = (.8*map[i][j])
-                        elif i+1 >= length or (i+1 < length and map[i+1][j] == -1.00):
-                           pass# map[i][j] = (.1*map[i][j])
+                        if j-1 < 0 or moving_map[i][j-1] == -1.00: #left
+                            map[i][j] += (1/10*map[i][j]) #bounce back
+                        elif j-1 > 0 or moving_map[i][j-1] != -1.00:
+                            map[i][j-1] += (1/10*map[i][j])
+                        if i - 1 > 0 or moving_map[i-1][j] != -1.00: #up
+                            map[i-1][j] += (8/10*map[i][j])
+                            map[i][j] -= (8/10*map[i][j])
+                        if j+1 < width and moving_map[i][j+1] != -1.00: #right
+                            map[i][j+1] += (1/10*map[i][j])
+                        elif j+1 < 0 or ( moving_map[i][j+1] == -1.00):
+                            map[i][j] += (1/10*map[i][j]) #bounce back
                             
                     #WE GO EAST        
                     elif move == "E":
