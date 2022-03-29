@@ -236,7 +236,7 @@ class MovingState(State):
                             map[i][j] += (1/10*map[i][j]) #bounce back
                         elif j-1 > 0 or (j-1 < width and moving_map[i][j-1] != -1.00):
                             map[i][j-1] += (1/10*map[i][j])
-                        if i - 1 > 0 and moving_map[i-1][j] != -100.00: #up
+                        if i - 1 > 0 and moving_map[i-1][j] != -1.00: #up
                             map[i-1][j] += (8/10*map[i][j])
                             map[i][j] -= (8/10*map[i][j])
                         if j+1 < width and moving_map[i][j+1] != -1.00: #right
@@ -246,20 +246,19 @@ class MovingState(State):
                             
                     #WE GO EAST        
                     elif move == "E":
-                        if j-1 <= 0 or (j-1 < width and moving_map[i][j-1] == -1.00):
-                            map[i][j] = (.1*map[i][j])
-                        if i - 1 < 0 or map[i-1][j] == -1:
-                            map[i][j] = (.8*map[i][j])
-                        else:
-                            map[i][j] = (.8*map[i][j+1])
-                        if i+1 >= length or map[i+1][j] == -1:
-                            map[i][j] = (.1*map[i][j])
-                        else:
-                            map[i][j] = (.1*map[i+1][j])
-                        if j+1 >= len(map[0]) or map[i][j+1] == -1:
-                            pass
-                        else:
-                            map[i][j] = (.8*map[i][j+1])
+                        if i - 1 > 0 and moving_map[i-1][j] != -1.00:
+                            map[i][j] += (1/10*map[i][j])
+                        elif i-1 <= 0 or (i-1 < length and moving_map[i-1][j] == -1.00):
+                            map[i][j] += (1/10*map[i][j])
+                        if i+1 < 0 or (i+1 < length and moving_map[i+1][j] == -1.00):
+                            map[i][j] += (.1*map[i][j])
+                        elif i+1 < length and moving_map[i+1][j] == -1.00:
+                            map[i][j] += (.1*map[i][j])
+                        if j+1 < width and moving_map[i][j+1] != -1.00: #right
+                            map[i][j+1] += (8/10*map[i][j+1])
+                            map[i][j] -= (8/10*map[i][j])
+                        #elif j+1 < 0 or (j+1 < width and moving_map[i][j+1] == -1.00):
+                        #    map[i][j] += (1/10*map[i][j]) #bounce back
 
         self.context._my_map = map                      
         self.context.change_state(SensingState())
@@ -335,9 +334,9 @@ if __name__ == "__main__":
                             [1/31, -1.0, -1.0, 1/31, 1/31, -1.0, 1/31],
                             [1/31, 1/31, 1/31, 1/31, -1.0, -1.0, 1/31],
                             [1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31]]
-    context = Robot(SensingState(), WindMaze)
     print("Initial Location Probabilities")
-    for i in range(3):
+    context = Robot(SensingState(), WindMaze)
+    for i in range(2):
         context.sensing(sense[i])
         print("Filtering after Evidence", sense[i])
         context.printMatrix()
