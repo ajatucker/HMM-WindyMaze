@@ -18,6 +18,13 @@ class Robot:
 
     def __init__(self, state: State, map) -> None:
         self._my_map = map
+        for i in range(len(map)):
+            for j in range(len(map[i])):
+                if(map[i][j] == -1):
+                    self._my_map[i][j] = map[i][j]
+                else:
+                    self._my_map[i][j] = map[i][j] * 100
+        self.printMatrix()
         self.change_state(state)
         
 
@@ -83,11 +90,13 @@ class SensingState(State):
 
     def sensing(self, map, sense) -> None:
         #total = 0
+        u = 0
+        testSense = sense
         for i in range(len(map)):
             for j in range(len(map[i])):
                 if(map[i][j] != -1): 
                     update = self.filtering(i, j, map, sense) #filtering creates a multiplier for each spot
-                    map[i][j] = map[i][j] * (update) * 1000#
+                    map[i][j] = map[i][j] * (update)*10
                     
         print("Sensing wants to change the state of the context.")
         self.context._my_map = map
@@ -96,111 +105,103 @@ class SensingState(State):
     
     def filtering(self, indexI, indexJ, map, dir) -> None:
         checkNum = 1
-        if(checkNum > -1):
-            print(checkNum)
+        if(checkNum != -1):
+            #print(checkNum)
             length = len(map)
             width = len(map[indexI])
             if dir == ([1,0,0,0]): #W
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                    print("miss barrier ", checkNum)
+         
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
 
                 if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
                      checkNum = checkNum * 85/100 
-                     print("miss barrier ", checkNum)
+            
                 else:
                     checkNum = checkNum * 1/10 
                 
                 if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
                      checkNum = checkNum * 15/100 
-                     print("miss barrier ", checkNum)
+              
                 else:
                     checkNum = checkNum * 90/100 
                 
                 if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
                      checkNum = checkNum * 15/100 
-                     print("find barrier ", checkNum)
+                
                 else:
                     checkNum = checkNum * 90/100 
                 #need to look west
             elif (dir == ([0,1,0,0])): #N
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
                     checkNum = checkNum * 85/100
-                    print("miss barrier ", checkNum)
+               
                 else:
                     checkNum = checkNum * 1/10
 
                 if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
                      checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                     print("miss barrier ", checkNum)
+                  
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
                 
                 if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
                      checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                     print("miss barrier ", checkNum)
+           
                 else:
                     checkNum = checkNum * 90/100 #know its an obstacle
                 
                 if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
                      checkNum = checkNum * 15/100 #know its an obstacle
-                     print("find barrier ", checkNum)
+
                 else:
                     checkNum = checkNum * 90/100
                  #need to look north
             elif(dir == [0,0,1,0]): #E
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                    print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
 
                 if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
                      checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                     print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
                 
                 if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
                      checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                     print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 #know its an obstacle
                 
                 if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
                      checkNum = checkNum * 85/100 #know its an obstacle
-                     print("find barrier ", checkNum)
                 else:
                     checkNum = checkNum * 1/10 
                  #need to look east
             elif(dir == [0,0,0,1]): #S
                 if(indexI-1 < 0 or (indexI-1 > 0 and map[indexI-1][indexJ] == -1.00)):
                     checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                    print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
 
                 if(indexJ-1 < 0 or (indexJ-1 > 0 and map[indexI][indexJ-1] == -1.00)):
                      checkNum = checkNum * 15/100 #misses an obstacle/barrier
-                     print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 #know its an open square
                 
                 if(indexI+1 >= length or (indexI+1 < length and map[indexI+1][indexJ] == -1.00)):
                      checkNum = checkNum * 85/100 #know its an obstacle
-                     print("miss barrier ", checkNum)
                 else:
                     checkNum = checkNum * 1/10 
                 
                 if(indexJ+1 >= width or (indexJ+1 < width and map[indexI][indexJ+1] == -1.00)):
                      checkNum = checkNum * 15/100 
-                     print("find barrier ", checkNum)
                 else:
                     checkNum = checkNum * 90/100 
             
-            print(checkNum)
+            #print(checkNum)
                  #need to look south
             return checkNum
         #print("Sensing handles filtering request.")
@@ -228,24 +229,24 @@ class MovingState(State):
 
         for i in range(len(moving_map)):
             for j in range(len(moving_map[0])):
-                if moving_map[i][j] ==-1:
+                if moving_map[i][j] !=-1:
                     #continue
                     if move == "N":
-                        if j-1 < 0 or moving_map[i][j-1] == -1.00: #left
+                        if j-1 <= 0 or (j-1 < width and moving_map[i][j-1] == -1.00): #left
                             map[i][j] += (1/10*map[i][j]) #bounce back
-                        elif j-1 > 0 or moving_map[i][j-1] != -1.00:
+                        elif j-1 > 0 or (j-1 < width and moving_map[i][j-1] != -1.00):
                             map[i][j-1] += (1/10*map[i][j])
-                        if i - 1 > 0 or moving_map[i-1][j] != -1.00: #up
+                        if i - 1 > 0 and moving_map[i-1][j] != -100.00: #up
                             map[i-1][j] += (8/10*map[i][j])
                             map[i][j] -= (8/10*map[i][j])
                         if j+1 < width and moving_map[i][j+1] != -1.00: #right
                             map[i][j+1] += (1/10*map[i][j])
-                        elif j+1 < 0 or ( moving_map[i][j+1] == -1.00):
+                        elif j+1 < 0 or (j+1 < width and moving_map[i][j+1] == -1.00):
                             map[i][j] += (1/10*map[i][j]) #bounce back
                             
                     #WE GO EAST        
                     elif move == "E":
-                        if j-1 < 0 or map[i][j] == -1:
+                        if j-1 <= 0 or (j-1 < width and moving_map[i][j-1] == -1.00):
                             map[i][j] = (.1*map[i][j])
                         if i - 1 < 0 or map[i-1][j] == -1:
                             map[i][j] = (.8*map[i][j])
@@ -335,9 +336,18 @@ if __name__ == "__main__":
                             [1/31, 1/31, 1/31, 1/31, -1.0, -1.0, 1/31],
                             [1/31, 1/31, 1/31, 1/31, 1/31, 1/31, 1/31]]
     context = Robot(SensingState(), WindMaze)
+    print("Initial Location Probabilities")
+    for i in range(3):
+        context.sensing(sense[i])
+        print("Filtering after Evidence", sense[i])
+        context.printMatrix()
+        context.moving(movements[i])
+        print("Prediction after Action", movements[i])
+        context.printMatrix()
+    context.sensing(sense[3])
+    print("Filtering after Evidence", sense[3])
     context.printMatrix()
-    context.sensing(sense[0])
-    context.printMatrix()
-    context.moving(movements[0])
-    context.printMatrix()
+
+    
+
 
